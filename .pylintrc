@@ -5,3 +5,4 @@ disable=
     C0115, #missing-class-docstring
     C0116, #missing-function-docstring
     R0903, #too-few-public-methods
+init-hook='import sys; sys.path.append("/home/vitor/Documents/repos/gerente-investimentos/backend")'
