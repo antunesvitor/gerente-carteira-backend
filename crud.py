@@ -17,3 +17,24 @@ def create_ativo(db_session: Session, ativo: schemas.AtivoCreate):
     db_session.commit()
     db_session.refresh(db_ativo)
     return db_ativo
+
+
+def get_posicao(db_session: Session, posicao_id:int):
+    return db_session.query(models.Posicao).filter(models.Posicao.id == posicao_id).first()
+
+def get_posicoes(db_session: Session, skip: int = 0, limit: int = 100):
+    return db_session.query(models.Posicao).offset(skip).limit(limit).all()
+
+def get_posicao_by_name(db_session: Session, posicao_nome: str):
+    return db_session.query(models.Posicao).filter(models.Posicao.nome == posicao_nome).first()
+
+def create_posicao(db_session: Session, posicao: schemas.PosicaoCreate):
+    db_posicao = models.Posicao(nome=posicao.nome, quantidade=posicao.quantidade,
+                            valor=posicao.valor, precoMedio=posicao.precoMedio,
+                            valorInvestido=posicao.valorInvestido, posicaoAtual=posicao.posicaoAtual,
+                            lucroPrejuizo=posicao.lucroPrejuizo)
+
+    db_session.add(db_posicao)
+    db_session.commit()
+    db_session.refresh(db_posicao)
+    return db_posicao

@@ -13,3 +13,21 @@ class Ativo(AtivoBase):
 
     class Config:
         orm_mode = True
+
+class PosicaoBase(BaseModel):
+    nome: str
+    quantidade: float
+    valor: float
+    precoMedio: float
+    valorInvestido: float
+    posicaoAtual: float
+    lucroPrejuizo: float
+
+class PosicaoCreate(PosicaoBase):
+    pass
+
+class Posicao(PosicaoBase):
+    id: int
+
+    class Config:
+        orm_mode = True

@@ -30,3 +30,18 @@ def create_ativo(ativo: schemas.AtivoCreate, dbs: Session = Depends(get_db)):
 def read_ativos(skip: int = 0, limit: int = 100, dbs: Session = Depends(get_db)):
     ativos = crud.get_ativos(dbs, skip=skip, limit=limit)
     return ativos
+
+@app.post("/posicao", response_model=schemas.Posicao)
+def create_posicao(posicao: schemas.PosicaoCreate, dbs: Session = Depends(get_db)):
+    db_posicao = crud.get_posicao_by_name(dbs, posicao.papel)
+
+    if db_posicao:
+        raise HTTPException(status_code=400, detail='Posicão já adicionada')
+
+    return crud.create_posicao(db_session=dbs, posicao=posicao)
+
+
+@app.get('/posicoes', response_model=list[schemas.Posicao])
+def read_posicao(skip: int = 0, limit: int = 100, dbs: Session = Depends(get_db)):
+    ativos = crud.get_posicoes(dbs, skip=skip, limit=limit)
+    return ativos
