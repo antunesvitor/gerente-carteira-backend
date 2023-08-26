@@ -45,3 +45,12 @@ def create_posicao(posicao: schemas.PosicaoCreate, dbs: Session = Depends(get_db
 def read_posicao(skip: int = 0, limit: int = 100, dbs: Session = Depends(get_db)):
     ativos = crud.get_posicoes(dbs, skip=skip, limit=limit)
     return ativos
+
+@app.post('/empresa', response_model=schemas.Empresa)
+def create_empresa(empresa: schemas.EmpresaCreate, dbs: Session = Depends(get_db)):
+    db_empresa = crud.get_empresa_by_cnpj(db_session=dbs, cnpj=empresa.cnpj)
+
+    if db_empresa:
+        raise HTTPException(status_code=400, detail='empresa já adicionada')
+    
+    return crud.create_empresa(db_session=dbs, empresa=empresa)

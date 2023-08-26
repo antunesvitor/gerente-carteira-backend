@@ -31,3 +31,16 @@ class Posicao(PosicaoBase):
 
     class Config:
         orm_mode = True
+
+class EmpresaBase(BaseModel):
+    nome: str
+    cnpj: str
+
+class EmpresaCreate(EmpresaBase):
+    pass
+
+class Empresa(EmpresaBase):
+    id: int
+
+    class Config:
+        orm_mode = True
