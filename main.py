@@ -33,13 +33,7 @@ def read_ativos(skip: int = 0, limit: int = 100, dbs: Session = Depends(get_db))
 
 @app.post("/posicao", response_model=schemas.Posicao)
 def create_posicao(posicao: schemas.PosicaoCreate, dbs: Session = Depends(get_db)):
-    db_posicao = crud.get_posicao_by_name(dbs, posicao.nome)
-
-    if db_posicao:
-        raise HTTPException(status_code=400, detail='Posicão já adicionada')
-
     return crud.create_posicao(db_session=dbs, posicao=posicao)
-
 
 @app.get('/posicao', response_model=list[schemas.Posicao])
 def read_posicao(skip: int = 0, limit: int = 100, dbs: Session = Depends(get_db)):
@@ -52,5 +46,28 @@ def create_empresa(empresa: schemas.EmpresaCreate, dbs: Session = Depends(get_db
 
     if db_empresa:
         raise HTTPException(status_code=400, detail='empresa já adicionada')
-    
+
     return crud.create_empresa(db_session=dbs, empresa=empresa)
+
+@app.get('/compra', response_model=list[schemas.Compra])
+def read_compra(id_usuario:int, dbs: Session = Depends(get_db)):
+    compras = crud.get_compras_by_user(dbs, id_user=id_usuario)
+    return compras
+
+@app.post('/compra', response_model=schemas.Compra)
+def create_compra(compra: schemas.CompraCreate, dbs: Session = Depends(get_db)):
+    return crud.create_compra(db_session=dbs, compra=compra)
+
+# Usuario ===========================================================================
+@app.get('/usuario', response_model=schemas.Usuario)
+def read_user(id: int, dbs: Session = Depends(get_db)):
+    return crud.get_user(db_session=dbs, id=id)
+
+@app.post('/usuario', response_model=schemas.Usuario)
+def create_usuario(usuario: schemas.UsuarioCreate, dbs: Session = Depends(get_db)):
+    db_usuario = crud.get_user_by_name(db_session=dbs, user_name=usuario.name)
+
+    if db_usuario:
+        raise HTTPException(status_code=400, detail='Usuário já adicionado')
+
+    return crud.create_usuario(db_session=dbs, usuario=usuario)
