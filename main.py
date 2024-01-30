@@ -1,7 +1,9 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
-import crud, models, schemas
+import crud
+import models
+import schemas
 from database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -31,14 +33,26 @@ def read_ativos(skip: int = 0, limit: int = 100, dbs: Session = Depends(get_db))
     ativos = crud.get_ativos(dbs, skip=skip, limit=limit)
     return ativos
 
+# ==================================================================================================
 @app.post("/posicao", response_model=schemas.Posicao)
 def create_posicao(posicao: schemas.PosicaoCreate, dbs: Session = Depends(get_db)):
+    db_posicao_user = crud.get_posicao_by_user_and_ativo(dbs, posicao.id_usuario, posicao.id_ativo)
+
+    if db_posicao_user:
+        raise HTTPException(status_code=400, detail='Posição já cadastrada')
+
     return crud.create_posicao(db_session=dbs, posicao=posicao)
+
+@app.put("/posicao", response_model=schemas.Posicao)
+def update_posicao(posicao: schemas.Posicao, dbs: Session = Depends(get_db)):
+    return crud.update_posicao(db_session=dbs, posicao=posicao)
 
 @app.get('/posicao', response_model=list[schemas.Posicao])
 def read_posicao(skip: int = 0, limit: int = 100, dbs: Session = Depends(get_db)):
     ativos = crud.get_posicoes(dbs, skip=skip, limit=limit)
     return ativos
+
+# ==================================================================================================
 
 @app.post('/empresa', response_model=schemas.Empresa)
 def create_empresa(empresa: schemas.EmpresaCreate, dbs: Session = Depends(get_db)):

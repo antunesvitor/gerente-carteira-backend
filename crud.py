@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import update
 
 import models
 import schemas
@@ -33,11 +34,27 @@ def get_posicoes(db_session: Session, skip: int = 0, limit: int = 100):
 def get_posicao_by_user(db_session: Session, user_id: int):
     return db_session.query(models.Posicao).filter(models.Posicao.id_usuario == user_id).first()
 
+def get_posicao_by_user_and_ativo(db_session: Session, user_id: int, ativo_id: int):
+    return db_session.query(models.Posicao).filter(models.Posicao.id_usuario == user_id
+                                                   and models.Posicao.id_ativo == ativo_id).first()
+
 def create_posicao(db_session: Session, posicao: schemas.PosicaoCreate):
     db_posicao = models.Posicao(id_usuario=posicao.id_usuario, id_ativo=posicao.id_ativo,
                                 quantidade=posicao.quantidade)
 
     db_session.add(db_posicao)
+    db_session.commit()
+    db_session.refresh(db_posicao)
+    return db_posicao
+
+def update_posicao(db_session: Session, posicao: schemas.Posicao):
+    db_posicao = get_posicao(db_session, posicao.id)
+
+    db_posicao.quantidade = posicao.quantidade
+
+    db_session.execute(update(models.Posicao)
+                       .where(models.Posicao.id==posicao.id)
+                       .values(quantidade=posicao.quantidade))
     db_session.commit()
     db_session.refresh(db_posicao)
     return db_posicao
